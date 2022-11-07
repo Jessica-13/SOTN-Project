@@ -1,2 +1,1 @@
-<<<<<<< HEAD
-"# SOTN-Project" 
+# SOTN-Project
