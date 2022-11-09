@@ -1,117 +1,76 @@
-breed [walkers walker]          ; we call them walkers and we address one of them with walker
-walkers-own [goal tofrom]       ; we add an attribute to an agent, the walker will walk to the goal
-patches-own [popularity popular-patch]
+breed [                                               ; agent 1
+  delivery-cars
+  delivery-car
+]
+breed [                                               ; agent 2
+  tourist-cars
+  tourist-car
+]
+breed [                                               ; agent 3
+  battery-stations
+  battery-station
+]
+breed [                                               ; agent 4
+  common-destinations
+  common-destination
+]
 
-breed [ buildings building ]    ;;;
 
+delivery-cars-own [
+  destination-delivery-cars                           ; destination goal
+  tofrom-delivery-cars                                ; direction
+]
+tourist-cars-own [
+  destination-tourist-cars
+  tofrom-tourist-cars
+]
 turtles-own [
   speed
 ]
 
+; ADD : level-population-destination
+
+
 to setup
-  clear-all
-  import-pcolors "map.png"     ; import-pcolors "bitofsouth.png"
-  set-default-shape buildings "house" ; for buildings
-  set-default-shape turtles "car"
-
-  create-walkers walker-count[
-    setxy random-xcor random-ycor     ; we chose where they will start (random place)
-    set goal one-of patches           ; we take all the set of patches and select one random
-    set tofrom 1                      ; that means that the drone is going to the goal (not back home)
-    set color blue
-    set size 20
-
-    set speed 0.1 + random-float 0.9
-    ;5
-  ]
-
-  create-buildings 1[                 ; add a building
-      setxy (600)(330)
-      set color red
-      set size 25
-  ]
-
-  create-buildings 1[                 ; add a building
-      setxy random-xcor random-ycor
-      set color red
-      set size 25
-  ]
-
-  reset-ticks
 end
 
 to go
-  move-walkers
+  drive
   tick
 end
 
+; the function that will describe the way agents move
+to drive
+end
 
-to move-walkers
-  ask walkers [
-    ifelse patch-here = goal [             ; check if the patch in which we are is the goal, then do something
-      set tofrom abs( tofrom - 1 )         ; means that the drone needs to come back home now
-      ; if we have reach the goal it slip 1 to 0, it slip 0 to 1 instead
-      ifelse tofrom = 0[
-        set goal [ patch-here ] of one-of buildings    ; add some code to send the UVA back to the closest hub (set goal to hub)
-      ][
-        set goal one-of patches in-radius flying-vision            ; add some code to send the UVA to random destination within the flying radius (set goal to feasible random patch)
-      ]
-      ][
-      walk-towards-goal
-      ]
-    ]
+to drive-towards-goal
 end
 
 
-to walk-towards-goal
-  ;ask patch-here [ become-more-popular]    ; ( if the drone is located on a patch = this patch is grown in popularity )
-  face best-way-to goal                    ; (make them faces the best walk to goal)
-  fd 1                                     ; "step forward"
-end
-
-
-to become-more-popular
-  set popularity popularity + popularity-per-step
-  if popularity >= minimum-route-popularity [ set popular-patch 1 ]
-end
-
-
-to-report best-way-to [destination]
-  let visible-patches patches in-radius walker-vision-dist            ; all the patches that are in the vision
-  let routes-that-take-me-closer visible-patches with[                ; extract a groupe of patches with this properties
-    pcolor = white and
-    distance destination < [ distance destination -  1 ] of myself    ; myself is the current agent
-                                                                      ; (-1 to endure that it's actually closer)
-  ]                                        ; comparison of all the patches : it will select all the patches closer to the goal that are closer to me
-
-  ifelse any? routes-that-take-me-closer[
-    report max-one-of routes-that-take-me-closer[ abs( 40 - pcolor ) ]    ; NetLogo palette #
-  ][
-    report destination                                                    ; if there isn't such a route
-  ]
+to-report best-way-to
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
 10
-1420
-670
+647
+448
 -1
 -1
-0.5
+13.0
 1
 10
 1
 1
 1
 0
-0
-0
 1
-0
-1209
-0
-650
+1
+1
+-16
+16
+-16
+16
 0
 0
 1
@@ -119,11 +78,11 @@ ticks
 30.0
 
 BUTTON
-79
-54
-142
-87
-setup
+61
+74
+124
+107
+NIL
 setup
 NIL
 1
@@ -136,13 +95,13 @@ NIL
 1
 
 BUTTON
-78
-107
-141
+61
 140
+124
+173
+NIL
 go
-go
-T
+NIL
 1
 T
 OBSERVER
@@ -154,74 +113,14 @@ NIL
 
 SLIDER
 23
-163
+210
 195
-196
-walker-count
-walker-count
-0
-100
-20.0
+243
+car-count
+car-count
 1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-20
-219
-192
-252
-popularity-per-step
-popularity-per-step
-0
 100
 10.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-11
-270
-201
-303
-minimum-route-popularity
-minimum-route-popularity
-0
-100
-9.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-22
-317
-194
-350
-walker-vision-dist
-walker-vision-dist
-0
-100
-13.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-27
-372
-199
-405
-flying-vision
-flying-vision
-1
-500
-484.0
 1
 1
 NIL
