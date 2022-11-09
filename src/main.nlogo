@@ -1,37 +1,54 @@
-breed [                                               ; agent 1
-  delivery-cars
-  delivery-car
-]
-breed [                                               ; agent 2
-  tourist-cars
-  tourist-car
-]
-breed [                                               ; agent 3
-  battery-stations
-  battery-station
-]
-breed [                                               ; agent 4
-  common-destinations
-  common-destination
-]
+breed [ delivery-cars delivery-car ]                  ; agent 1
+breed [ tourist-cars tourist-car ]                    ; agent 2
 
+delivery-cars-own [ goal tofrom ]
 
-delivery-cars-own [
-  destination-delivery-cars                           ; destination goal
-  tofrom-delivery-cars                                ; direction
-]
-tourist-cars-own [
-  destination-tourist-cars
-  tofrom-tourist-cars
-]
-turtles-own [
+tourist-cars-own [ goal tofrom ]
+
+turtles-own[
   speed
 ]
+
+breed [ battery-stations battery-station ]            ; agent 3
+breed [ common-destinations common-destination ]      ; agent 4
+
 
 ; ADD : level-population-destination
 
 
 to setup
+  clear-all
+  import-pcolors "map.png"                            ; import-pcolors "bitofsouth.png"
+  set-default-shape common-destinations "house"
+  set-default-shape battery-stations "house"
+  set-default-shape tourist-cars "car"
+  set-default-shape delivery-cars "truck"
+
+  create-delivery-cars delivery-cars-count[
+    setxy random-xcor random-ycor                     ; FIX THE START POSITION
+    set goal one-of patches
+    set tofrom 1
+    set color yellow
+    set size 15
+    set speed 0.2 + random-float 0.9                  ; move à little bit faster in general
+  ]
+
+  create-tourist-cars tourist-cars-count[
+    setxy random-xcor random-ycor                     ; FIX THE START POSITION
+    set goal one-of patches
+    set tofrom 1
+    set color red
+    set size 15
+    set speed 0.1 + random-float 0.9
+  ]
+
+   create-common-destinations 1[                       ; add TCD - which for the moment is the "home" of the tourist-cars
+      setxy (600)(330)
+      set color blue
+      set size 25
+  ]
+
+  reset-ticks
 end
 
 to go
@@ -41,36 +58,80 @@ end
 
 ; the function that will describe the way agents move
 to drive
+  ask delivery-cars [
+    ifelse patch-here = goal [
+      set tofrom abs( tofrom - 1 )                               ; means that the car needs to come back "home" now
+
+      ifelse tofrom = 0[
+        set goal [ patch-here ] of one-of common-destinations    ; add some code to send the UVA back to the closest hub (set goal to hub)
+      ][
+        set goal one-of patches in-radius life-move              ; NEED THIS
+      ]
+      ][
+      drive-towards-goal
+      ]
+  ]
+
+
+  ask tourist-cars [
+    ifelse patch-here = goal [
+      set tofrom abs( tofrom - 1 )
+
+      ifelse tofrom = 0[
+        set goal [ patch-here ] of one-of common-destinations
+      ][
+        set goal one-of patches in-radius life-move
+      ]
+    ][
+      drive-towards-goal
+    ]
+  ]
 end
 
 to drive-towards-goal
+  face best-way-to goal
+  fd 1
 end
 
 
-to-report best-way-to
+
+; check this function !!!
+to-report best-way-to [ destination ]
+  let visible-patches patches in-radius car-vision-distance
+  let routes-that-take-me-closer visible-patches with[
+    pcolor = white and
+    distance destination < [ distance destination -  1 ] of myself
+
+  ]
+
+  ifelse any? routes-that-take-me-closer[
+    report max-one-of routes-that-take-me-closer[ abs( 40 - pcolor ) ]
+  ][
+    report destination
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
 10
-647
-448
+1428
+670
 -1
 -1
-13.0
+1.0
 1
 10
 1
 1
 1
 0
+0
+0
 1
-1
-1
--16
-16
--16
-16
+0
+1209
+0
+650
 0
 0
 1
@@ -101,7 +162,7 @@ BUTTON
 173
 NIL
 go
-NIL
+T
 1
 T
 OBSERVER
@@ -116,11 +177,56 @@ SLIDER
 210
 195
 243
-car-count
-car-count
+delivery-cars-count
+delivery-cars-count
 1
 100
-10.0
+5.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+29
+266
+201
+299
+tourist-cars-count
+tourist-cars-count
+1
+100
+5.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+26
+395
+198
+428
+life-move
+life-move
+1
+500
+500.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+30
+344
+202
+377
+car-vision-distance
+car-vision-distance
+1
+100
+50.0
 1
 1
 NIL

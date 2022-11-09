@@ -206,7 +206,7 @@ walker-vision-dist
 walker-vision-dist
 0
 100
-13.0
+14.0
 1
 1
 NIL
@@ -221,7 +221,7 @@ flying-vision
 flying-vision
 1
 500
-484.0
+483.0
 1
 1
 NIL
