@@ -3,7 +3,8 @@ tourist-cars-own [
   target
   battery-level
   station-target
-  tofrom ;;;
+  tofrom                    ;;;
+  tofrom-station            ;;;
 ]
 
 patches-own [
@@ -36,7 +37,7 @@ to setup
     fd max-pxcor
     set color blue
     set size 10
-    move-to one-of patches with [ pcolor != white AND pcolor != blue AND pcolor != green AND count houses-here = 0 AND count stations-here = 0 AND count houses in-radius 20 = 0 ]
+    move-to one-of patches with [ pcolor != white AND pcolor != blue AND pcolor != green AND count houses-here = 0 AND count stations-here = 0 AND count houses in-radius 10 = 0 ]
   ]
 
   create-stations number-of-stations [
@@ -51,11 +52,12 @@ to setup
     set color red
     set size 10
     set tofrom 1
+    set tofrom-station 1
     ; setxy random-xcor random-ycor
     move-to one-of patches with [ pcolor = white AND count tourist-cars-here = 0 ]
-    set target one-of
+    set target one-of patches
     set count-destination-target ( count-destination-target + 1 )
-    face target
+    ;face target
 
 
     set station-target one-of stations
@@ -83,36 +85,44 @@ to move-tourist-cars
       set count-dead-cars ( count-dead-cars + 1 )
     ]
 
-    ;ifelse battery-level > 400 [
+    ifelse battery-level > 400 [
       ;; if at target, choose a new random target
       ifelse patch-here = target [
         set tofrom abs( tofrom - 1 )
+        set count-destination-target-reached ( count-destination-target-reached + 1 )
 
         ifelse tofrom = 0[
           set target [ patch-here ] of one-of houses
+          set count-destination-target ( count-destination-target + 1 )
           recolor-popular-paths ;;;
         ][
           set target one-of patches in-radius 100
+          set count-destination-target ( count-destination-target + 1 )
         ]
       ][
         drive-towards-target
       ]
-    ;][
+    ][
 
 ;      if distance station-target > 50 [
 ;        set station-target one-of stations in-radius 50
 ;        set count-station-target ( count-station-target + 1 )
 ;      ]
-;
-;      face station-target
-;      ifelse patch-here = station-target [
-;        set count-station-target-reached ( count-station-target-reached + 1 )
-;        set battery-level 500
-;      ][
-;        drive-towards-station-target
-;      ]
-;
-;    ]; ifelse battery-level
+
+      if station-target = nobody [ die ]                                 ;;; IF NO STATION AROUND
+      ;face station-target
+
+
+      ifelse patch-here = station-target [
+        set count-station-target-reached ( count-station-target-reached + 1 )
+        set battery-level 500
+        set station-target [ patch-here ]one-of stations in-radius 50                  ;;;
+        set count-station-target ( count-station-target + 1 )
+      ][
+        drive-towards-station-target
+      ]
+
+    ]; ifelse battery-level
 
   ] ; ask
 
@@ -185,12 +195,14 @@ to drive-towards-target
   ask patch-here [ become-more-popular ]
   face best-way-to target
   fd 1
+  set battery-level ( battery-level - 0.1 )
 end
 
 to drive-towards-station-target
   ;ask patch-here [ become-more-popular]
   face best-way-to station-target
   fd 1
+  set battery-level ( battery-level - 0.1 )
 end
 
 
@@ -308,7 +320,7 @@ number-of-stations
 number-of-stations
 1
 300
-197.0
+250.0
 1
 1
 NIL
