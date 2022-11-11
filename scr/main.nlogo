@@ -13,7 +13,7 @@ patches-own [
 ]
 
 
-breed [ houses house ]
+breed [ common-destinations common-destination ]
 breed [ stations station ]
 
 globals [
@@ -29,22 +29,22 @@ to setup
   clear-all
   import-pcolors "map.png"
 
-  set-default-shape houses "house"
+  set-default-shape common-destinations "house"
   set-default-shape stations "x"
   set-default-shape tourist-cars "car"
 
-  create-houses number-of-houses [
+  create-common-destinations number-of-houses [
     fd max-pxcor
     set color blue
     set size 10
-    move-to one-of patches with [ pcolor != white AND pcolor != blue AND pcolor != green AND count houses-here = 0 AND count stations-here = 0 AND count houses in-radius 10 = 0 ]
+    move-to one-of patches with [ pcolor != white AND pcolor != blue AND pcolor != green AND count common-destinations-here = 0 AND count stations-here = 0 AND count common-destinations in-radius 10 = 0 ]
   ]
 
   create-stations number-of-stations [
     fd max-pxcor
     set color green
     set size 10
-    move-to one-of patches with [ pcolor != white AND pcolor != blue AND pcolor != green AND count houses-here = 0 AND count stations-here = 0 AND count stations in-radius 20 = 0 ]
+    move-to one-of patches with [ pcolor != white AND pcolor != blue AND pcolor != green AND count common-destinations-here = 0 AND count stations-here = 0 AND count stations in-radius 20 = 0 ]
   ]
 
 
@@ -92,7 +92,7 @@ to move-tourist-cars
         set count-destination-target-reached ( count-destination-target-reached + 1 )
 
         ifelse tofrom = 0[
-          set target [ patch-here ] of one-of houses
+          set target [ patch-here ] of one-of common-destinations
           set count-destination-target ( count-destination-target + 1 )
           recolor-popular-paths ;;;
         ][

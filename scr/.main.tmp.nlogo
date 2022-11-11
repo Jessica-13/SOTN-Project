@@ -13,7 +13,7 @@ patches-own [
 ]
 
 
-breed [ houses house ]
+breed [  house ]
 breed [ stations station ]
 
 globals [
@@ -52,7 +52,7 @@ to setup
     set color red
     set size 10
     set tofrom 1
-    set tofrom-station 1
+    ; set tofrom-station 1
     ; setxy random-xcor random-ycor
     move-to one-of patches with [ pcolor = white AND count tourist-cars-here = 0 ]
     set target one-of patches
@@ -60,7 +60,7 @@ to setup
     ;face target
 
 
-    set station-target one-of stations
+    set station-target one-of patches
     set count-station-target ( count-station-target + 1 )
 
     set battery-level 500
@@ -116,7 +116,7 @@ to move-tourist-cars
       ifelse patch-here = station-target [
         set count-station-target-reached ( count-station-target-reached + 1 )
         set battery-level 500
-        set station-target [ patch-here ]one-of stations in-radius 50                  ;;;
+        set station-target [ patch-here ] of one-of stations in-radius 50                  ;;;
         set count-station-target ( count-station-target + 1 )
       ][
         drive-towards-station-target
