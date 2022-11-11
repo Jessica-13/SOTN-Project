@@ -42,7 +42,7 @@ to setup
   ]
 
 
-  create-cars number-of-people [
+  create-cars number-of-peopl [
     set color red
     set size 10
     setxy random-xcor random-ycor
@@ -54,7 +54,7 @@ to setup
     set station-target one-of stations
     set count-station-target ( count-station-target + 1 )
 
-    set battery-level
+    set battery-level 500
   ]
   reset-ticks
 end
@@ -68,7 +68,7 @@ to go
 
 
     ;; if at target, choose a new random target
-    ifelse battery-level > 501 [
+    ifelse battery-level > 251 [
       if distance target = 0 [
         set count-destination-target ( count-destination-target + 1 )
         set target one-of houses
@@ -85,8 +85,8 @@ to go
         set battery-level ( battery-level - 1 )
       ]
     ][
-      if distance station-target > 500 [
-        set station-target one-of stations in-radius 500
+      if distance station-target > 250 [
+        set station-target one-of stations in-radius 250
         set count-station-target ( count-station-target + 1 )
       ]
 
@@ -95,7 +95,7 @@ to go
         move-to station-target
         set count-station-target-reached ( count-station-target-reached + 1 )
 
-        set battery-level 1000
+        set battery-level 500
       ][
         fd 1
       ]

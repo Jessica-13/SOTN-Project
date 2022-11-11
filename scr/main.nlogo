@@ -42,7 +42,7 @@ to setup
   ]
 
 
-  create-cars number-of-people [
+  create-cars number-of-cars [
     set color red
     set size 10
     setxy random-xcor random-ycor
@@ -175,8 +175,8 @@ SLIDER
 196
 194
 229
-number-of-people
-number-of-people
+number-of-cars
+number-of-cars
 1
 100
 20.0
