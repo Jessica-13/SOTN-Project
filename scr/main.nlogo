@@ -70,7 +70,7 @@ to setup
 end
 
 to go
-  move-tourist-cars
+  move-tourist-cars                                     ; function that determines the way in which the tourists' cars decide to move
   tick
 end
 

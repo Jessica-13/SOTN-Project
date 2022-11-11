@@ -60,7 +60,7 @@ to setup
     set station-target one-of patches                                                      ; random at the beginning
     set count-station-target ( count-station-target + 1 )
 
-    set battery-level 500
+    set battery-level 500                                                                  ; random value that seems consistent with the size of the map
   ]
 
   set count-destination-target ( count-destination-target - number-of-cars )               ; to start from 0
@@ -70,7 +70,7 @@ to setup
 end
 
 to go
-  move-tourist-cars
+  move-tourist-cars                     ; function that determines the way in which the tourists' cars decide to move
   tick
 end
 
