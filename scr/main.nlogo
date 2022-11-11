@@ -78,109 +78,64 @@ end
 to move-tourist-cars
   ask tourist-cars [
     if battery-level = 0 [
-      die
-      set count-dead-cars ( count-dead-cars + 1 )
+      die                                              ; if the battery reaches 0 the car dies
+      set count-dead-cars ( count-dead-cars + 1 )      ; the counter is updated accordingly
     ]
 
     ifelse battery-level > 400 [
-      ;; if at target, choose a new random target
-      ifelse patch-here = target [
-        set tofrom abs( tofrom - 1 )
-        set count-destination-target-reached ( count-destination-target-reached + 1 )
 
-        ifelse tofrom = 0[
-          set target [ patch-here ] of one-of common-destinations
-          set count-destination-target ( count-destination-target + 1 )
+      ifelse patch-here = target [                     ; if at target
+        set tofrom abs( tofrom - 1 )                   ; determines if the car is moving towards the destination or if it is driving back
+        set count-destination-target-reached ( count-destination-target-reached + 1 )         ; since in this case it means that the destination has been reached
+
+        ifelse tofrom = 0 [
+          set target [ patch-here ] of one-of common-destinations                             ; choose a new target
+          set count-destination-target ( count-destination-target + 1 )                       ; the counter is updated accordingly
           recolor-popular-paths ;;;
         ][
-          set target one-of patches in-radius 100
-          set count-destination-target ( count-destination-target + 1 )
+          set target one-of patches in-radius 100                                             ; or a new random destination
+          set count-destination-target ( count-destination-target + 1 )                       ; the counter is updated accordingly
         ]
       ][
-        drive-towards-target
+        drive-towards-target                                            ; if the goal has not yet been reached the car must move towards the goal
       ]
     ][
 
-;      if distance station-target > 50 [
+      ; if the battery is not enough, the car must reach a station
+
+
+
+;      if distance station-target > 50 [                                ; (maybe, not sure that we really need this)
 ;        set station-target one-of stations in-radius 50
 ;        set count-station-target ( count-station-target + 1 )
 ;      ]
 
-      if station-target = nobody [ die ]                                 ;;; IF NO STATION AROUND
-      ;face station-target
-
+      if station-target = nobody [ die ]                                ; IF NO STATION AROUND
 
       ifelse patch-here = station-target [
-        set count-station-target-reached ( count-station-target-reached + 1 )
-        set battery-level 500
-        set station-target [ patch-here ] of one-of stations in-radius 50                  ;;;
-        set count-station-target ( count-station-target + 1 )
+        set count-station-target-reached ( count-station-target-reached + 1 )              ; the counter is updated accordingly
+        set battery-level 500                                                              ; the battery is fully charged
+        set station-target [ patch-here ] of one-of stations in-radius 50                  ; after recharging, the car exits the station
+        set count-station-target ( count-station-target + 1 )                              ; the counter is updated accordingly
       ][
-        drive-towards-station-target
+        drive-towards-station-target                                    ; if the station has not yet been reached the car must move towards the station
       ]
 
-    ]; ifelse battery-level
+    ]; end ifelse battery-level
 
-  ] ; ask
+  ] ; end ask
 
 end
 
 
-;to go
-;  ask tourist-cars [
-;    if battery-level = 0 [
-;      die
-;      set count-dead-cars ( count-dead-cars + 1 )
-;    ]
-;    ifelse battery-level > 350 [
-;      ;; if at target, choose a new random target
-;      if distance target = 0 [
-;        set count-destination-target ( count-destination-target + 1 )
-;        set target one-of houses
-;        face target
-;      ]
-;
-;      ;; move towards target.  once the distance is less than 1,
-;      ;; use move-to to land exactly on the target.
-;      ifelse distance target < 1 [
-;        move-to target
-;        set count-destination-target-reached ( count-destination-target-reached + 1 )
-;      ][
-;        ask patch-here [ become-more-popular] ;;;
-;        recolor-popular-paths ;;;
-;        fd 1
-;        set battery-level ( battery-level - 1 )
-;      ]
-;    ][
-;      if distance station-target > 250 [
-;        set station-target one-of stations in-radius 250
-;        set count-station-target ( count-station-target + 1 )
-;      ]
-;
-;      face station-target
-;      ifelse distance station-target < 1 [
-;        move-to station-target
-;        set count-station-target-reached ( count-station-target-reached + 1 )
-;
-;        set battery-level 500
-;      ][
-;        fd 1
-;      ]
-;    ]
-;
-;  ] ; ask
-;
-;  tick
-;end
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; to make a particular trajectory more popular
 to become-more-popular
   set popularity popularity + popularity-per-step
   if popularity >= minimum-route-popularity [ set popular-patch 1 ]
 end
 
-
+; to color the popular trajectories
 to recolor-popular-paths
   ask patches with [ popular-patch = 1 ] [
     set pcolor violet
@@ -192,22 +147,22 @@ to drive-towards-target
   ask patch-here [ become-more-popular ]
   face best-way-to target
   fd 1
-  set battery-level ( battery-level - 0.1 )
+  set battery-level ( battery-level - 0.1 )          ; with each step some of the energy is consumed
 end
 
 to drive-towards-station-target
-  ;ask patch-here [ become-more-popular]
+  ; ask patch-here [ become-more-popular]            ; popularity is determined only with respect to common destinations
   face best-way-to station-target
   fd 1
-  set battery-level ( battery-level - 0.1 )
+  set battery-level ( battery-level - 0.1 )          ; with each step some of the energy is consumed
 end
 
 
-
+; to determine which direction to move
 to-report best-way-to [destination]
   let visible-patches patches in-radius car-vision-dist
   let routes-that-take-me-closer visible-patches with[
-    pcolor = white and
+    pcolor = white and                               ; to stay in the street
     distance destination < [ distance destination -  1 ] of myself
   ]
   ifelse any? routes-that-take-me-closer[
