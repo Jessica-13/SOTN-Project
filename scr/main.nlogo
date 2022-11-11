@@ -26,7 +26,7 @@ globals [
 
 to setup
   clear-all
-  import-pcolors "map.png"
+  import-pcolors "map.png"                          ; map of a portion of Dublin city center
 
   set-default-shape common-destinations "house"
   set-default-shape stations "x"
@@ -51,22 +51,20 @@ to setup
     set color red
     set size 10
     set tofrom 1
-    ; set tofrom-station 1
-    ; setxy random-xcor random-ycor
+    ; ADD setxy ( maybe reading from a .txt ? )
     move-to one-of patches with [ pcolor = white AND count tourist-cars-here = 0 ]
-    set target one-of patches
+
+    set target one-of patches                                                              ; random at the beginning
     set count-destination-target ( count-destination-target + 1 )
-    ;face target
 
-
-    set station-target one-of patches
+    set station-target one-of patches                                                      ; random at the beginning
     set count-station-target ( count-station-target + 1 )
 
-    set battery-level 500
+    set battery-level 500                                                                  ; random value that seems consistent with the size of the map
   ]
 
-  set count-destination-target ( count-destination-target - number-of-cars )                      ; to start from 0
-  set count-station-target ( count-station-target - number-of-cars )                              ; to start from 0
+  set count-destination-target ( count-destination-target - number-of-cars )               ; to start from 0
+  set count-station-target ( count-station-target - number-of-cars )                       ; to start from 0
 
   reset-ticks
 end
