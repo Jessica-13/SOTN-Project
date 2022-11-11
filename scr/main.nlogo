@@ -1,9 +1,15 @@
-breed [ cars car ]
-cars-own [
+breed [ tourist-cars tourist-car ]
+tourist-cars-own [
   target
   battery-level
   station-target
 ]
+
+patches-own [
+  popularity
+  popular-patch
+]
+
 
 breed [ houses house ]
 breed [ stations station ]
@@ -21,31 +27,30 @@ to setup
   clear-all
   import-pcolors "map.png"
 
-
   set-default-shape houses "house"
   set-default-shape stations "x"
-  set-default-shape cars "car"
+  set-default-shape tourist-cars "car"
 
-  ;; CREATE-ORDERED-<BREEDS> distributes the houses evenly
   create-houses number-of-houses [
-    ;fd max-pxcor
+    fd max-pxcor
     set color blue
     set size 10
-    move-to one-of patches with [ pcolor = white AND count houses-here = 0 AND count stations-here = 0 ]
+    move-to one-of patches with [ pcolor != white AND pcolor != blue AND pcolor != green AND count houses-here = 0 AND count stations-here = 0 AND count houses in-radius 20 = 0 ]
   ]
 
   create-stations number-of-stations [
-    ;fd max-pxcor
+    fd max-pxcor
     set color green
     set size 10
-    move-to one-of patches with [ pcolor != white AND pcolor != blue AND pcolor != green AND count houses-here = 0 AND count stations-here = 0 ]
+    move-to one-of patches with [ pcolor != white AND pcolor != blue AND pcolor != green AND count houses-here = 0 AND count stations-here = 0 AND count stations in-radius 20 = 0 ]
   ]
 
 
-  create-cars number-of-cars [
+  create-tourist-cars number-of-cars [
     set color red
     set size 10
-    setxy random-xcor random-ycor
+    ; setxy random-xcor random-ycor
+    move-to one-of patches with [ pcolor = white AND count tourist-cars-here = 0 ]
     set target one-of houses
     set count-destination-target ( count-destination-target + 1 )
     face target
@@ -56,19 +61,21 @@ to setup
 
     set battery-level 500
   ]
+
+  set count-destination-target ( count-destination-target - number-of-cars )                      ; to start from 0
+  set count-station-target ( count-station-target - number-of-cars )                              ; to start from 0
+
   reset-ticks
 end
 
 to go
-  ask cars [
+  ask tourist-cars [
     if battery-level = 0 [
       die
       set count-dead-cars ( count-dead-cars + 1 )
     ]
-
-
-    ;; if at target, choose a new random target
-    ifelse battery-level > 251 [
+    ifelse battery-level > 350 [
+      ;; if at target, choose a new random target
       if distance target = 0 [
         set count-destination-target ( count-destination-target + 1 )
         set target one-of houses
@@ -81,6 +88,8 @@ to go
         move-to target
         set count-destination-target-reached ( count-destination-target-reached + 1 )
       ][
+        ask patch-here [ become-more-popular] ;;;
+        recolor-popular-paths ;;;
         fd 1
         set battery-level ( battery-level - 1 )
       ]
@@ -108,6 +117,103 @@ to go
 
   tick
 end
+
+
+
+
+to become-more-popular
+  set popularity popularity + popularity-per-step
+  if popularity >= minimum-route-popularity [ set popular-patch 1 ]
+end
+
+
+to recolor-popular-paths
+  ask patches with [ popular-patch = 1 ] [
+    set pcolor violet
+  ]
+end
+
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+to move-walkers
+  ask tourist-cars [
+    if battery-level = 0 [
+      die
+      set count-dead-cars ( count-dead-cars + 1 )
+    ]
+    ;; if at target, choose a new random target
+    ifelse battery-level > 400 [
+      ifelse patch-here = target [
+        set target [ patch-here ] of one-of houses
+        recolor-popular-paths
+      ][
+        drive-towards-target
+      ]
+    ][
+
+
+
+      if distance station-target > 50 [
+        set station-target one-of stations in-radius 50
+        set count-station-target ( count-station-target + 1 )
+      ]
+
+      face station-target
+      ifelse patch-here = station-target [
+        set count-station-target-reached ( count-station-target-reached + 1 )
+        set battery-level 500
+      ][
+        drive-towards-station-target
+      ]
+
+
+
+    ]; ifelse battery-level
+
+  ] ; ask
+
+end
+
+
+
+
+to drive-towards-target
+  ask patch-here [ become-more-popular]
+  face best-way-to target
+  fd 1
+end
+
+to drive-towards-station-target
+  ;ask patch-here [ become-more-popular]
+  face best-way-to station-target
+  fd 1
+end
+
+
+
+to-report best-way-to [destination]
+  let visible-patches patches in-radius car-vision-dist
+  let routes-that-take-me-closer visible-patches with[
+    pcolor = white and
+    distance destination < [ distance destination -  1 ] of myself
+  ]
+  ifelse any? routes-that-take-me-closer[
+    report max-one-of routes-that-take-me-closer[ abs( 40 - pcolor ) ]
+  ][
+    report destination
+  ]
+end
+
+
+
+
+
+
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -179,7 +285,7 @@ number-of-cars
 number-of-cars
 1
 100
-20.0
+50.0
 1
 1
 NIL
@@ -208,8 +314,8 @@ SLIDER
 number-of-stations
 number-of-stations
 1
-500
-300.0
+300
+197.0
 1
 1
 NIL
@@ -269,6 +375,51 @@ count-station-target-reached
 17
 1
 11
+
+SLIDER
+30
+383
+202
+416
+popularity-per-step
+popularity-per-step
+0
+100
+10.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+11
+426
+201
+459
+minimum-route-popularity
+minimum-route-popularity
+0
+100
+10.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+32
+540
+204
+573
+car-vision-dist
+car-vision-dist
+1
+100
+10.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
