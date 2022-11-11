@@ -1,28 +1,27 @@
 breed [ tourist-cars tourist-car ]
 tourist-cars-own [
-  target
-  battery-level
-  station-target
-  tofrom                    ;;;
-  tofrom-station            ;;;
+  target                          ; the destination
+  battery-level                   ; the level of the electric battery
+  station-target                  ; the closer electric charging station
+  tofrom                          ;;; to move from a destination to another
 ]
 
 patches-own [
-  popularity
-  popular-patch
+  popularity                      ; to analyze the popularity
+  popular-patch                   ; to know which patches are the most popular
 ]
 
 
-breed [ common-destinations common-destination ]
-breed [ stations station ]
+breed [ common-destinations common-destination ]    ; the set of common places in Dublin center
+breed [ stations station ]                          ; the electric charging stations
 
 globals [
-  count-dead-cars
-  count-destination-target
-  count-destination-target-reached
+  count-dead-cars                                   ; number of cars that run out of battery without being able to recharge
+  count-destination-target                          ; number of destinations to be reached
+  count-destination-target-reached                  ; number of destinations that you have actually reached
 
-  count-station-target
-  count-station-target-reached
+  count-station-target                              ; number of electric charging stations to be reached
+  count-station-target-reached                      ; number of electric charging stations that you have actually reached
 ]
 
 to setup
