@@ -1,188 +1,117 @@
-breed [ delivery-cars delivery-car ]                  ; agent 1
-breed [ tourist-cars tourist-car ]                    ; agent 2
-
-;delivery-cars-own [ goal station-goal tofrom need-recharge ]
-
-;tourist-cars-own [ goal station-goal tofrom need-recharge ]
-
-turtles-own[
-  speed
-  battery
-  goal
-  ;tofrom
-  station-goal
-  need-recharge
+breed [ cars car ]
+cars-own [
+  target
+  battery-level
+  station-target
 ]
 
-breed [ battery-stations battery-station ]            ; agent 3
-breed [ common-destinations common-destination ]      ; agent 4
+breed [ houses house ]
+breed [ stations station ]
 
+globals [
+  count-dead-cars
+  count-destination-target
+  count-destination-target-reached
 
-; ADD : level-population-destination
-
+  count-station-target
+  count-station-target-reached
+]
 
 to setup
   clear-all
-  import-pcolors "map.png"                            ; import-pcolors "bitofsouth.png"
-  set-default-shape common-destinations "house"
-  set-default-shape battery-stations "x"
-  set-default-shape tourist-cars "car"
-  set-default-shape delivery-cars "truck"
+  set-default-shape houses "house"
+  set-default-shape stations "x"
+  set-default-shape cars "car"
 
-  create-delivery-cars delivery-cars-count[
-    ;setxy random-xcor random-ycor                     ; FIX THE START POSITION (only in with patches)
-    put-on-empty-road
-    set goal one-of patches
-    set station-goal one-of patches
-    ;set tofrom 1
-    set need-recharge 0
-    set color yellow
-    set size 15
-    set speed 0.2 + random-float 0.9                  ; move à little bit faster in general
-    set battery 500                                   ; bigger battery in general
+  ;; CREATE-ORDERED-<BREEDS> distributes the houses evenly
+  create-houses number-of-houses [
+    ;fd max-pxcor
+    set color blue
+    move-to one-of patches with [ count houses-here = 0 and count stations-here = 0 ]
   ]
 
-  create-tourist-cars tourist-cars-count[
-    ;setxy random-xcor random-ycor                     ; FIX THE START POSITION (only in with patches) (maybe near the residences?)
-    put-on-empty-road
-    set goal one-of patches
-    set station-goal one-of patches
-    ;set tofrom 1
-    set need-recharge 0
-    set color red
-    set size 15
-    set speed 0.1 + random-float 0.9
-    set battery 100
-  ]
-
-   create-common-destinations 1[                       ; add TCD - which for the moment is the "home" of the tourist-cars
-      setxy (600)(330)
-      set color blue
-      set size 25
-  ]
-
-
-  create-battery-stations number-stations[            ; add stations in random positions
-                                                      ;setxy random-xcor random-ycor                   ; FIX THE START POSITION (only in grey patches- into a certain radius)
-    put-on-grey-zone
+  create-stations number-of-stations [
+    ;fd max-pxcor
     set color green
-    set size 25
+    move-to one-of patches with [ count houses-here = 0 and count stations-here = 0 ]
   ]
 
+
+  create-cars number-of-people [
+    set color red
+    setxy random-xcor random-ycor
+    set target one-of houses
+    set count-destination-target ( count-destination-target + 1 )
+    face target
+
+
+    set station-target one-of stations in-radius 10
+    set count-station-target ( count-station-target + 1 )
+
+    set battery-level 50
+  ]
   reset-ticks
 end
 
 to go
-  drive
-  tick
-end
-
-to put-on-empty-road
-  move-to one-of patches with [ pcolor = white and count delivery-cars-here = 0 and count tourist-cars-here = 0 ]
-end
-
-to put-on-grey-zone
-  move-to one-of patches with [ count battery-stations-here = 0 ]
-end
+  ask cars [
+    if battery-level = 0 [
+      die
+      set count-dead-cars ( count-dead-cars + 1 )
+    ]
 
 
+    ;; if at target, choose a new random target
+    ifelse battery-level > 25 [
+      if distance target = 0 [
+        set count-destination-target ( count-destination-target + 1 )
+        set target one-of houses
+        face target
+      ]
 
-; the function that will describe the way agents move
-to drive
-
-  ask delivery-cars [
-    if battery = 0 [die] ; FIX PROBLEM WITH THE BATTERY
-
-
-    ; CHECK THIS FUNCTION
-
-
-
-    ifelse patch-here = goal[
-      ;set tofrom abs( tofrom - 1 )                               ; means that the car needs to come back "home" now
-
-      ;ifelse tofrom = 0[
-        set goal [ patch-here ] of one-of common-destinations    ; add some code to send the UVA back to the closest hub (set goal to hub)
-      ;][
-        ;set goal one-of patches in-radius life-move              ; NEED (in-radius life-move)
-      ;]
-    ][
-      ifelse battery < 50 [                                         ; we can change the minimum value
-        set station-goal [ patch-here ] of one-of battery-stations in-radius car-vision-distance
-
-        ifelse patch-here = station-goal[
-          ;recharge
-          wait 5
-          set battery 500
-        ][
-          drive-towards-station-goal
-          set battery battery - 1
-        ]
+      ;; move towards target.  once the distance is less than 1,
+      ;; use move-to to land exactly on the target.
+      ifelse distance target < 1 [
+        move-to target
+        set count-destination-target-reached ( count-destination-target-reached + 1 )
       ][
-        drive-towards-goal
-        set battery battery - 1
+        fd 1
+        set battery-level ( battery-level - 1 )
+      ]
+    ][
+      if distance station-target > 10 [
+        set station-target one-of stations in-radius 10
+        set count-station-target ( count-station-target + 1 )
+      ]
+
+      face station-target
+      ifelse distance station-target < 1 [
+        move-to station-target
+        set count-station-target-reached ( count-station-target-reached + 1 )
+
+        set battery-level 50
+      ][
+        fd 1
       ]
     ]
 
 
-  ]
 
-
-  ask tourist-cars [
-    if battery = 0 [die] ; FIX PROBLEM WITH THE BATTERY
-
-    ifelse patch-here = goal [
-      ;set tofrom abs( tofrom - 1 )
-
-      ;ifelse tofrom = 0[
-        set goal [ patch-here ] of one-of common-destinations
-      ;][
-        ;set goal one-of patches in-radius life-move
-      ;]
-    ][
-      drive-towards-goal
-    ]
-  ]
-
-
-end
-
-to drive-towards-goal
-  face best-way-to goal
-  fd 1
-end
-
-to drive-towards-station-goal
-  face best-way-to station-goal
-  fd 1
-end
+  ] ; ask
 
 
 
-; check this function !!!
-to-report best-way-to [ destination ]
-  let visible-patches patches in-radius car-vision-distance
-  let routes-that-take-me-closer visible-patches with[
-    pcolor = white and
-    distance destination < [ distance destination -  1 ] of myself
-
-  ]
-
-  ifelse any? routes-that-take-me-closer[
-    report max-one-of routes-that-take-me-closer[ abs( 40 - pcolor ) ]
-  ][
-    report destination
-  ]
+  tick
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
 10
-1428
-670
+647
+448
 -1
 -1
-1.0
+13.0
 1
 10
 1
@@ -193,9 +122,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-1209
+32
 0
-650
+32
 0
 0
 1
@@ -203,10 +132,10 @@ ticks
 30.0
 
 BUTTON
-61
-74
-124
-107
+57
+64
+120
+97
 NIL
 setup
 NIL
@@ -220,10 +149,10 @@ NIL
 1
 
 BUTTON
-61
-140
-124
-173
+60
+131
+123
+164
 NIL
 go
 T
@@ -237,12 +166,12 @@ NIL
 1
 
 SLIDER
-23
-210
-195
-243
-delivery-cars-count
-delivery-cars-count
+22
+196
+194
+229
+number-of-people
+number-of-people
 1
 100
 10.0
@@ -252,12 +181,12 @@ NIL
 HORIZONTAL
 
 SLIDER
-29
-266
-201
-299
-tourist-cars-count
-tourist-cars-count
+25
+258
+197
+291
+number-of-houses
+number-of-houses
 1
 100
 10.0
@@ -267,27 +196,12 @@ NIL
 HORIZONTAL
 
 SLIDER
-26
-395
-198
-428
-life-move
-life-move
-1
-500
-400.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-30
-344
-202
-377
-car-vision-distance
-car-vision-distance
+27
+318
+199
+351
+number-of-stations
+number-of-stations
 1
 100
 50.0
@@ -296,20 +210,60 @@ car-vision-distance
 NIL
 HORIZONTAL
 
-SLIDER
-31
-452
-203
-485
-number-stations
-number-stations
-0
-500
-300.0
-1
-1
+MONITOR
+681
+30
+785
+75
 NIL
-HORIZONTAL
+count-dead-cars
+17
+1
+11
+
+MONITOR
+685
+109
+834
+154
+NIL
+count-destination-target
+17
+1
+11
+
+MONITOR
+686
+179
+812
+224
+NIL
+count-station-target
+17
+1
+11
+
+MONITOR
+852
+113
+1050
+158
+NIL
+count-destination-target-reached
+17
+1
+11
+
+MONITOR
+852
+179
+1027
+224
+NIL
+count-station-target-reached
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
