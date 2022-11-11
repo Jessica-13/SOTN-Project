@@ -127,7 +127,6 @@ to move-tourist-cars
 
 end
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; to make a particular trajectory more popular
 to become-more-popular

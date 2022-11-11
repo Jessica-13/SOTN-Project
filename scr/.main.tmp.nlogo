@@ -127,7 +127,6 @@ to move-tourist-cars
 
 end
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; to make a particular trajectory more popular
 to become-more-popular
@@ -151,18 +150,18 @@ to drive-towards-target
 end
 
 to drive-towards-station-target
-  ;ask patch-here [ become-more-popular]             ; popularity is determined only with respect to common destinatin
+  ; ask patch-here [ become-more-popular]            ; popularity is determined only with respect to common destinations
   face best-way-to station-target
   fd 1
   set battery-level ( battery-level - 0.1 )          ; with each step some of the energy is consumed
 end
 
 
-
+; to determine which direction to move
 to-report best-way-to [destination]
   let visible-patches patches in-radius car-vision-dist
   let routes-that-take-me-closer visible-patches with[
-    pcolor = white and
+    pcolor = white and                               ; to stay in the street
     distance destination < [ distance destination -  1 ] of myself
   ]
   ifelse any? routes-that-take-me-closer[
