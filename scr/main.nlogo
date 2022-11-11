@@ -3,6 +3,7 @@ tourist-cars-own [
   target
   battery-level
   station-target
+  tofrom ;;;
 ]
 
 patches-own [
@@ -49,9 +50,10 @@ to setup
   create-tourist-cars number-of-cars [
     set color red
     set size 10
+    set tofrom 1
     ; setxy random-xcor random-ycor
     move-to one-of patches with [ pcolor = white AND count tourist-cars-here = 0 ]
-    set target one-of houses
+    set target one-of patches
     set count-destination-target ( count-destination-target + 1 )
     face target
 
@@ -69,58 +71,103 @@ to setup
 end
 
 to go
+  move-tourist-cars
+  tick
+end
+
+
+to move-tourist-cars
   ask tourist-cars [
     if battery-level = 0 [
       die
       set count-dead-cars ( count-dead-cars + 1 )
     ]
-    ifelse battery-level > 350 [
+
+    ;ifelse battery-level > 400 [
       ;; if at target, choose a new random target
-      if distance target = 0 [
-        set count-destination-target ( count-destination-target + 1 )
-        set target one-of houses
-        face target
-      ]
+      ifelse patch-here = target [
+        set tofrom abs( tofrom - 1 )
 
-      ;; move towards target.  once the distance is less than 1,
-      ;; use move-to to land exactly on the target.
-      ifelse distance target < 1 [
-        move-to target
-        set count-destination-target-reached ( count-destination-target-reached + 1 )
+        ifelse tofrom = 0[
+          set target [ patch-here ] of one-of houses
+          recolor-popular-paths ;;;
+        ][
+          set target one-of patches in-radius 100
+        ]
       ][
-        ask patch-here [ become-more-popular] ;;;
-        recolor-popular-paths ;;;
-        fd 1
-        set battery-level ( battery-level - 1 )
+        drive-towards-target
       ]
-    ][
-      if distance station-target > 250 [
-        set station-target one-of stations in-radius 250
-        set count-station-target ( count-station-target + 1 )
-      ]
+    ;][
 
-      face station-target
-      ifelse distance station-target < 1 [
-        move-to station-target
-        set count-station-target-reached ( count-station-target-reached + 1 )
-
-        set battery-level 500
-      ][
-        fd 1
-      ]
-    ]
-
+;      if distance station-target > 50 [
+;        set station-target one-of stations in-radius 50
+;        set count-station-target ( count-station-target + 1 )
+;      ]
+;
+;      face station-target
+;      ifelse patch-here = station-target [
+;        set count-station-target-reached ( count-station-target-reached + 1 )
+;        set battery-level 500
+;      ][
+;        drive-towards-station-target
+;      ]
+;
+;    ]; ifelse battery-level
 
   ] ; ask
 
-
-
-  tick
 end
 
 
+;to go
+;  ask tourist-cars [
+;    if battery-level = 0 [
+;      die
+;      set count-dead-cars ( count-dead-cars + 1 )
+;    ]
+;    ifelse battery-level > 350 [
+;      ;; if at target, choose a new random target
+;      if distance target = 0 [
+;        set count-destination-target ( count-destination-target + 1 )
+;        set target one-of houses
+;        face target
+;      ]
+;
+;      ;; move towards target.  once the distance is less than 1,
+;      ;; use move-to to land exactly on the target.
+;      ifelse distance target < 1 [
+;        move-to target
+;        set count-destination-target-reached ( count-destination-target-reached + 1 )
+;      ][
+;        ask patch-here [ become-more-popular] ;;;
+;        recolor-popular-paths ;;;
+;        fd 1
+;        set battery-level ( battery-level - 1 )
+;      ]
+;    ][
+;      if distance station-target > 250 [
+;        set station-target one-of stations in-radius 250
+;        set count-station-target ( count-station-target + 1 )
+;      ]
+;
+;      face station-target
+;      ifelse distance station-target < 1 [
+;        move-to station-target
+;        set count-station-target-reached ( count-station-target-reached + 1 )
+;
+;        set battery-level 500
+;      ][
+;        fd 1
+;      ]
+;    ]
+;
+;  ] ; ask
+;
+;  tick
+;end
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to become-more-popular
   set popularity popularity + popularity-per-step
   if popularity >= minimum-route-popularity [ set popular-patch 1 ]
@@ -132,58 +179,10 @@ to recolor-popular-paths
     set pcolor violet
   ]
 end
-
-
-
-
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-to move-walkers
-  ask tourist-cars [
-    if battery-level = 0 [
-      die
-      set count-dead-cars ( count-dead-cars + 1 )
-    ]
-    ;; if at target, choose a new random target
-    ifelse battery-level > 400 [
-      ifelse patch-here = target [
-        set target [ patch-here ] of one-of houses
-        recolor-popular-paths
-      ][
-        drive-towards-target
-      ]
-    ][
-
-
-
-      if distance station-target > 50 [
-        set station-target one-of stations in-radius 50
-        set count-station-target ( count-station-target + 1 )
-      ]
-
-      face station-target
-      ifelse patch-here = station-target [
-        set count-station-target-reached ( count-station-target-reached + 1 )
-        set battery-level 500
-      ][
-        drive-towards-station-target
-      ]
-
-
-
-    ]; ifelse battery-level
-
-  ] ; ask
-
-end
-
-
-
 
 to drive-towards-target
-  ask patch-here [ become-more-popular]
+  ask patch-here [ become-more-popular ]
   face best-way-to target
   fd 1
 end
@@ -208,12 +207,6 @@ to-report best-way-to [destination]
     report destination
   ]
 end
-
-
-
-
-
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
