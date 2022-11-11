@@ -31,14 +31,14 @@ to setup
     ;fd max-pxcor
     set color blue
     set size 10
-    move-to one-of patches with [ count houses-here = 0 and count stations-here = 0 ]
+    move-to one-of patches with [ pcolor = white AND count houses-here = 0 AND count stations-here = 0 ]
   ]
 
   create-stations number-of-stations [
     ;fd max-pxcor
     set color green
     set size 10
-    move-to one-of patches with [ count houses-here = 0 and count stations-here = 0 ]
+    move-to one-of patches with [ pcolor != white AND pcolor != blue AND pcolor != green AND count houses-here = 0 AND count stations-here = 0 ]
   ]
 
 
@@ -51,10 +51,10 @@ to setup
     face target
 
 
-    set station-target one-of stations in-radius 10
+    set station-target one-of stations
     set count-station-target ( count-station-target + 1 )
 
-    set battery-level 50
+    set battery-level
   ]
   reset-ticks
 end
@@ -68,7 +68,7 @@ to go
 
 
     ;; if at target, choose a new random target
-    ifelse battery-level > 25 [
+    ifelse battery-level > 501 [
       if distance target = 0 [
         set count-destination-target ( count-destination-target + 1 )
         set target one-of houses
@@ -85,8 +85,8 @@ to go
         set battery-level ( battery-level - 1 )
       ]
     ][
-      if distance station-target > 10 [
-        set station-target one-of stations in-radius 10
+      if distance station-target > 500 [
+        set station-target one-of stations in-radius 500
         set count-station-target ( count-station-target + 1 )
       ]
 
@@ -95,7 +95,7 @@ to go
         move-to station-target
         set count-station-target-reached ( count-station-target-reached + 1 )
 
-        set battery-level 50
+        set battery-level 1000
       ][
         fd 1
       ]
@@ -179,7 +179,7 @@ number-of-people
 number-of-people
 1
 100
-10.0
+20.0
 1
 1
 NIL
@@ -194,7 +194,7 @@ number-of-houses
 number-of-houses
 1
 100
-10.0
+20.0
 1
 1
 NIL
@@ -208,8 +208,8 @@ SLIDER
 number-of-stations
 number-of-stations
 1
-100
-50.0
+500
+300.0
 1
 1
 NIL
