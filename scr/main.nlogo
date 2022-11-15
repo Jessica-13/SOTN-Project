@@ -98,8 +98,8 @@ to setup
 
 
 
-  set count-destination-target ( count-destination-target - number-of-cars )               ; to start from 0
-  set count-station-target ( count-station-target - number-of-cars )                       ; to start from 0
+  set count-destination-target ( count-destination-target - 2 * number-of-cars )               ; to start from 0
+  set count-station-target ( count-station-target - 2 * number-of-cars )                       ; to start from 0
 
   reset-ticks
 end

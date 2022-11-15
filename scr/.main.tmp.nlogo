@@ -4,7 +4,7 @@ tourist-cars-own [
   battery-level                   ; the level of the electric battery
   station-target                  ; the closer electric charging station
   tofrom                          ;;; to move from a destination to another
-
+  speed
 ]
 
 breed [ delivery-cars delivery-car ]
@@ -13,6 +13,7 @@ delivery-cars-own [
   battery-level                   ; the level of the electric battery
   station-target                  ; the closer electric charging station
   tofrom                          ;;; to move from a destination to another
+  speed
 ]
 
 
@@ -60,6 +61,7 @@ to setup
 
 
   create-tourist-cars number-of-cars [
+    set speed 0.1 + random-float 0.9
     set color red
     set size 10
     set tofrom 1
@@ -78,6 +80,7 @@ to setup
 
 
   create-delivery-cars number-of-cars [
+    set speed 0.3 + random-float 0.9
     set color yellow
     set size 10
     set tofrom 1
@@ -95,7 +98,7 @@ to setup
 
 
 
-  set count-destination-target ( count-destination-target - number-of-cars )               ; to start from 0
+  set count-destination-target ( count-destination-target - number-of-cars  )               ; to start from 0
   set count-station-target ( count-station-target - number-of-cars )                       ; to start from 0
 
   reset-ticks
