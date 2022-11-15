@@ -69,7 +69,7 @@ to setup
     move-to one-of patches with [ pcolor = white AND count tourist-cars-here = 0 ]
 
     set target one-of patches                                                              ; random at the beginning
-    set count-destination-target ( count-destination-target + 1 )
+    set count-destination-target ( count-destination-target + 1 );
 
     set station-target one-of patches                                                      ; random at the beginning
     set count-station-target ( count-station-target + 1 )
@@ -98,8 +98,8 @@ to setup
 
 
 
-  set count-destination-target ( count-destination-target - number-of-cars  )               ; to start from 0
-  set count-station-target ( count-station-target - number-of-cars )                       ; to start from 0
+  set count-destination-target ( count-destination-target - 2 * number-of-cars )               ; to start from 0
+  set count-station-target ( count-station-target - 2 * number-of-cars )                       ; to start from 0
 
   reset-ticks
 end

@@ -69,10 +69,10 @@ to setup
     move-to one-of patches with [ pcolor = white AND count tourist-cars-here = 0 ]
 
     set target one-of patches                                                              ; random at the beginning
-    set count-destination-target ( count-destination-target + 1 )
+    set count-destination-target ( count-destination-target + 1 );
 
     set station-target one-of patches                                                      ; random at the beginning
-    set count-station-target ( count-station-target + 1 )
+    set count-station-target ( count-station-target + 1 );
 
     set battery-level 500                                                                  ; random value that seems consistent with the size of the map
   ]
