@@ -72,7 +72,7 @@ to setup
     set count-destination-target ( count-destination-target + 1 );
 
     set station-target one-of patches                                                      ; random at the beginning
-    set count-station-target ( count-station-target + 1 )
+    set count-station-target ( count-station-target + 1 );
 
     set battery-level 500                                                                  ; random value that seems consistent with the size of the map
   ]
@@ -147,10 +147,19 @@ to move-tourist-cars
 ;      ]
 
       if station-target = nobody [ die ]                                ; IF NO STATION AROUND
+      set count-dead-cars ( count-dead-cars + 1 )
 
       ifelse patch-here = station-target [
         set count-station-target-reached ( count-station-target-reached + 1 )              ; the counter is updated accordingly
         set battery-level 500                                                              ; the battery is fully charged
+        if count stations in-radius 50 = 0 [
+          die
+          set count-dead-cars ( count-dead-cars + 1 )
+        ]
+
+
+
+
         set station-target [ patch-here ] of one-of stations in-radius 50                  ; after recharging, the car exits the station
         set count-station-target ( count-station-target + 1 )                              ; the counter is updated accordingly
       ][
@@ -201,11 +210,22 @@ to move-delivery-cars
 ;        set count-station-target ( count-station-target + 1 )
 ;      ]
 
-      if station-target = nobody [ die ]                                ; IF NO STATION AROUND
+      if station-target = nobody [
+        die
+
+      ]                                ; IF NO STATION AROUND
+
+
+
 
       ifelse patch-here = station-target [
         set count-station-target-reached ( count-station-target-reached + 1 )              ; the counter is updated accordingly
         set battery-level 500                                                              ; the battery is fully charged
+
+        if count stations in-radius 50 = 0 [ die ]
+        set count-dead-cars ( count-dead-cars + 1 )
+
+
         set station-target [ patch-here ] of one-of stations in-radius 50                  ; after recharging, the car exits the station
         set count-station-target ( count-station-target + 1 )                              ; the counter is updated accordingly
       ][
