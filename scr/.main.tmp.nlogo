@@ -255,7 +255,7 @@ end
 to decay-popularity
   ask patches with [ not any? tourist-cars-here and not any? delivery-cars-here ] [
     set popularity popularity * (100 - popularity-decay-rate) / 100
-    ; when popularity is below 1, the patch becomes unpopular road (white)
+    ; when popularity is below 1, the patch becomes  popular road (white)
     if popularity < 1 [ set pcolor white ]
   ]
 end
