@@ -45,20 +45,36 @@ to setup
   set-default-shape tourist-cars "car"
   set-default-shape delivery-cars "truck"
 
-  create-common-destinations number-of-houses [
-    fd max-pxcor
-    set color blue
-    set size 10
-    move-to one-of patches with [ pcolor != white AND pcolor != blue AND pcolor != green AND count common-destinations-here = 0 AND count stations-here = 0 AND count common-destinations in-radius 10 = 0 ]
-  ]
+  ;; create common destinations randomly
+  ;create-common-destinations number-of-houses [
+  ;  fd max-pxcor
+  ;  set color blue
+  ;  set size 10
+  ;  move-to one-of patches with [ pcolor != white AND pcolor != blue AND pcolor != green AND count common-destinations-here = 0 AND count stations-here = 0 AND count common-destinations in-radius 10 = 0 ]
+  ;]
 
-  create-stations number-of-stations [
-    fd max-pxcor
-    set color green
-    set size 10
-    move-to one-of patches with [ pcolor != white AND pcolor != blue AND pcolor != green AND count common-destinations-here = 0 AND count stations-here = 0 AND count stations in-radius 20 = 0 ]
-  ]
+  ;; create common destinations with coordinates in "destinations.txt" file
+  set-destinations
 
+  ;; create stations randomly
+  ;create-stations number-of-stations [
+  ;  fd max-pxcor
+  ;  set color green
+  ;  set size 10
+  ;  move-to one-of patches with [ pcolor != white AND pcolor != blue AND pcolor != green AND count common-destinations-here = 0 AND count stations-here = 0 AND count stations in-radius 20 = 0 ]
+  ;]
+
+  ;; create stations near destinations (destination station)
+  ask common-destinations[
+    if any? patches in-radius 10 with [pcolor = white][
+      let empty-patch one-of patches in-radius 10 with [pcolor = white]
+      hatch-stations 1 [
+        set color green
+        set size 10
+        move-to empty-patch
+      ]
+    ]
+  ]
 
   create-tourist-cars number-of-cars [
     set speed 0.1 + random-float 0.9
@@ -295,6 +311,20 @@ to-report best-way-to [destination]
   ][
     report destination
   ]
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; read "destinations.txt" file to get destination coordinates and set a common-destination
+to set-destinations
+  file-open "destinations.txt"
+  while [not file-at-end?] [
+   create-common-destinations 1 [
+     setxy file-read file-read
+     set color blue
+     set size 10
+    ]
+  ]
+  file-close
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
