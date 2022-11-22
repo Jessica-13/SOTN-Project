@@ -190,7 +190,7 @@ to move-tourist-cars
       ifelse patch-here = station-target [
         set count-station-target-reached ( count-station-target-reached + 1 )              ; the counter is updated accordingly
 
-        ;ask stations-here [ set capacity ( capacity + 1 ) ]
+        ask stations-here [ set capacity ( capacity + 1 ) ]
 
 
         set battery-level 500                                                              ; the battery is fully charged
