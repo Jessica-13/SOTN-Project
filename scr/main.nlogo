@@ -476,7 +476,7 @@ number-of-cars
 number-of-cars
 1
 100
-5.0
+50.0
 1
 1
 NIL
@@ -654,10 +654,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-73
-522
-283
-555
+27
+496
+237
+529
 threshold-battery-level
 threshold-battery-level
 0
