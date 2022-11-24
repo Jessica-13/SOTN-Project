@@ -69,7 +69,7 @@ to setup
 
     set color green
     set size 10
-    move-to one-of patches with [ pcolor != white AND pcolor != blue AND pcolor != green AND count common-destinations-here = 0 AND count stations-here = 0 AND count stations in-radius 20 = 0 ]
+    move-to one-of patches with [ pcolor = white AND pcolor != blue AND pcolor != green AND count common-destinations-here = 0 AND count stations-here = 0 AND count stations in-radius 20 = 0 ]
   ]
 
   ;; create stations near destinations (destination station)
@@ -96,9 +96,10 @@ to setup
     set count-destination-target ( count-destination-target + 1 );
 
     set station-target one-of patches                                                      ; random at the beginning
+    ;set station-target one-of stations       ; a random station
     set count-station-target ( count-station-target + 1 );
 
-    set battery-level 500                                                                  ; random value that seems consistent with the size of the map
+    set battery-level full-battery-level                                                                  ; random value that seems consistent with the size of the map
   ]
 
 
@@ -115,9 +116,10 @@ to setup
     set count-destination-target ( count-destination-target + 1 )
 
     set station-target one-of patches                                                      ; random at the beginning
+    ;set station-target one-of stations       ; a random station
     set count-station-target ( count-station-target + 1 )
 
-    set battery-level 500                                                                  ; random value that seems consistent with the size of the map
+    set battery-level full-battery-level                                                                  ; random value that seems consistent with the size of the map
   ]
 
 
@@ -131,6 +133,16 @@ to setup
     set label 0
     set label-color black
   ]
+  ask delivery-cars [
+    set label full-battery-level
+    set label-color black
+  ]
+    ask tourist-cars [
+    set label full-battery-level
+    set label-color black
+  ]
+
+
   reset-ticks
 end
 
@@ -142,6 +154,17 @@ to go
   ask stations [
     set label capacity
   ]
+  ask delivery-cars [
+    set label round(battery-level)
+  ]
+  ask tourist-cars [
+    set label round(battery-level)
+  ]
+  if tick-counter > 10000 [
+    ask stations with [ capacity = 0 ][
+      die]
+  ]
+
   tick
 end
 
@@ -153,7 +176,7 @@ to move-tourist-cars
       set count-dead-cars ( count-dead-cars + 1 )      ; the counter is updated accordingly
     ]
 
-    ifelse battery-level > 400 [
+    ifelse battery-level > (full-battery-level * threshold-battery-level) [
 
       ifelse patch-here = target [                     ; if at target
         set tofrom abs( tofrom - 1 )                   ; determines if the car is moving towards the destination or if it is driving back
@@ -162,7 +185,7 @@ to move-tourist-cars
         ifelse tofrom = 0 [
           set target [ patch-here ] of one-of common-destinations                             ; choose a new target
           set count-destination-target ( count-destination-target + 1 )                       ; the counter is updated accordingly
-          recolor-popular-paths ;;;
+          ;recolor-popular-paths ;;;
         ][
           set target one-of patches in-radius 100                                             ; or a new random destination
           set count-destination-target ( count-destination-target + 1 )                       ; the counter is updated accordingly
@@ -176,10 +199,11 @@ to move-tourist-cars
 
 
 
-;      if distance station-target > 50 [                                ; (maybe, not sure that we really need this)
-;        set station-target one-of stations in-radius 50
-;        set count-station-target ( count-station-target + 1 )
-;      ]
+      if distance station-target > 50 and one-of stations in-radius 50 != nobody[                                ; (maybe, not sure that we really need this)
+
+        set station-target [ patch-here ] of one-of stations in-radius 50
+        ;set count-station-target ( count-station-target + 1 )
+      ]
 
       if station-target = nobody [
         die
@@ -190,10 +214,9 @@ to move-tourist-cars
       ifelse patch-here = station-target [
         set count-station-target-reached ( count-station-target-reached + 1 )              ; the counter is updated accordingly
 
-        ;ask stations-here [ set capacity ( capacity + 1 ) ]
+        increase-capacity                      ; increase station capacity
 
-
-        set battery-level 500                                                              ; the battery is fully charged
+        set battery-level full-battery-level                                                              ; the battery is fully charged
         if count stations in-radius 50 = 0 [
           die
           set count-dead-cars ( count-dead-cars + 1 )
@@ -202,7 +225,8 @@ to move-tourist-cars
 
 
 
-        set station-target [ patch-here ] of one-of stations in-radius 50                  ; after recharging, the car exits the station
+        ;set station-target [ patch-here ] of one-of stations in-radius 50                  ; after recharging, the car exits the station
+        ;set station-target one-of stations in-radius 50
         set count-station-target ( count-station-target + 1 )                              ; the counter is updated accordingly
       ][
         drive-towards-station-target                                    ; if the station has not yet been reached the car must move towards the station
@@ -226,7 +250,7 @@ to move-delivery-cars
       set count-dead-cars ( count-dead-cars + 1 )      ; the counter is updated accordingly
     ]
 
-    ifelse battery-level > 400 [
+    ifelse battery-level > full-battery-level * threshold-battery-level [
 
       ifelse patch-here = target [                     ; if at target
         set tofrom abs( tofrom - 1 )                   ; determines if the car is moving towards the destination or if it is driving back
@@ -235,7 +259,7 @@ to move-delivery-cars
         ifelse tofrom = 0 [
           set target one-of patches in-radius 100                                             ; choose a new target
           set count-destination-target ( count-destination-target + 1 )                       ; the counter is updated accordingly
-          recolor-popular-paths ;;;
+          ;recolor-popular-paths ;;;
         ][
           set target one-of patches in-radius 100                                             ; or a new random destination
           set count-destination-target ( count-destination-target + 1 )                       ; the counter is updated accordingly
@@ -249,10 +273,10 @@ to move-delivery-cars
 
 
 
-;      if distance station-target > 50 [                                ; (maybe, not sure that we really need this)
-;        set station-target one-of stations in-radius 50
+      if distance station-target > 50 and one-of stations in-radius 50 != nobody[                                ; (maybe, not sure that we really need this)
+        set station-target [ patch-here ] of one-of stations in-radius 50
 ;        set count-station-target ( count-station-target + 1 )
-;      ]
+      ]
 
       if station-target = nobody [
         die
@@ -264,12 +288,13 @@ to move-delivery-cars
 
       ifelse patch-here = station-target [
         set count-station-target-reached ( count-station-target-reached + 1 )              ; the counter is updated accordingly
+        increase-capacity
 
 
        ;ask stations-here [ set capacity ( capacity + 1 ) ]
 
 
-        set battery-level 500                                                              ; the battery is fully charged
+        set battery-level full-battery-level                                                              ; the battery is fully charged
 
         if count stations in-radius 50 = 0 [
           die
@@ -278,7 +303,8 @@ to move-delivery-cars
 
 
 
-        set station-target [ patch-here ] of one-of stations in-radius 50                  ; after recharging, the car exits the station
+        ;set station-target [ patch-here ] of one-of stations in-radius 50                  ; after recharging, the car exits the station
+        ;set station-target one-of stations in-radius 50
         set count-station-target ( count-station-target + 1 )                              ; the counter is updated accordingly
       ][
         drive-towards-station-target                                    ; if the station has not yet been reached the car must move towards the station
@@ -365,11 +391,19 @@ end
 
 to increase-tick-counter
   set tick-counter ( tick-counter  + 1 )
-  ask tourist-cars [
-    if tick-counter = 3000[
-      set color blue
-    ]
+  ;test if tick-counter works
+  ;ask tourist-cars [
+  ;  if tick-counter = 3000[
+  ;    set color blue
+  ;  ]
+  ;]
+end
+
+to increase-capacity
+  if station-target != nobody and stations-here != nobody[
+    ask stations-here [ set capacity capacity + 1  ]
   ]
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -442,7 +476,7 @@ number-of-cars
 number-of-cars
 1
 100
-50.0
+5.0
 1
 1
 NIL
@@ -603,6 +637,36 @@ tick-counter
 17
 1
 11
+
+SLIDER
+43
+453
+215
+486
+full-battery-level
+full-battery-level
+100
+500
+300.0
+10
+1
+NIL
+HORIZONTAL
+
+SLIDER
+73
+522
+283
+555
+threshold-battery-level
+threshold-battery-level
+0
+1
+0.5
+0.01
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -946,7 +1010,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.2.2
+NetLogo 6.3.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
