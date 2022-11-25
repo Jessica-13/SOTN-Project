@@ -9,7 +9,7 @@ This solution includes an agent-based model with maps and/or data for Dublin inc
 The map that has been chosen is a section of Dublin city centre, obtained through Google Maps:
 
 <p align="center">
-<a href="https://user-images.githubusercontent.com/80853919/204019477-0a68c4b1-4432-4f26-bedc-2e4f9a9ecceb.png" target="_blank"><img src="https://user-images.githubusercontent.com/80853919/204019477-0a68c4b1-4432-4f26-bedc-2e4f9a9ecceb.png" /></a>
+<a href="https://user-images.githubusercontent.com/80853919/204019477-0a68c4b1-4432-4f26-bedc-2e4f9a9ecceb.png" target="_blank"><img src="https://user-images.githubusercontent.com/80853919/204019477-0a68c4b1-4432-4f26-bedc-2e4f9a9ecceb.png"  width="600"/></a>
 </p>
 
 The model consists of a feedback system that allows at the end of the simulation to obtain a suggestion of the most suitable position for the positioning of the electrical stations in the selected map.
@@ -51,7 +51,7 @@ At the end of the simulation (tick-counter = 70000), only 8 stations that are re
 ## Credits
 
 <p align="center">
-<a href="https://user-images.githubusercontent.com/80853919/204019277-1b5ee3a7-b744-478e-b49d-6c7ec6dfab01.jpg" target="_blank"><img src="https://user-images.githubusercontent.com/80853919/204019277-1b5ee3a7-b744-478e-b49d-6c7ec6dfab01.jpg" /></a>
+<a href="https://user-images.githubusercontent.com/80853919/204019277-1b5ee3a7-b744-478e-b49d-6c7ec6dfab01.jpg" target="_blank"><img src="https://user-images.githubusercontent.com/80853919/204019277-1b5ee3a7-b744-478e-b49d-6c7ec6dfab01.jpg"  width="350" /></a>
 </p>
 
 ### Referent Professor
