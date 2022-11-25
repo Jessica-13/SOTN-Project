@@ -47,6 +47,7 @@ Subsequently the number is decreased over time based on whether the stations are
 At the end of the simulation (tick-counter = 70000), only 8 stations that are really needed to serve a total of 100 cars.
 
 <hr />
+
 ## Credits
 
 <p align="center">
