@@ -190,10 +190,38 @@ to go
               die
             ]
           ][
-            if tick-counter = 30000 [
-              ask stations with [ capacity <= 25 ][
+            ifelse tick-counter = 30000 [
+              ask stations with [ capacity <= 40 ][
                 set useful-stations ( useful-stations - 1 )
                 die
+              ]
+            ][
+              ifelse tick-counter = 35000 [
+                ask stations with [ capacity <= 60 ][
+                  set useful-stations ( useful-stations - 1 )
+                  die
+                ]
+              ][
+                ifelse tick-counter = 40000 [
+                  ask stations with [ capacity <= 80 ][
+                    set useful-stations ( useful-stations - 1 )
+                    die
+                  ]
+                ][
+                  ifelse tick-counter = 50000 [
+                    ask stations with [ capacity <= 100 ][
+                      set useful-stations ( useful-stations - 1 )
+                      die
+                    ]
+                  ][
+                    if tick-counter = 70000 [
+                      ask stations with [ capacity <= 200 ][
+                        set useful-stations ( useful-stations - 1 )
+                        die
+                      ]
+                    ]
+                  ]
+                ]
               ]
             ]
           ]
