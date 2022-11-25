@@ -29,7 +29,7 @@ In the interface there are also monitors that allow to view:
 - the number of destinations that each car wants to reach and the ones that are actually reached ("count-destination-target", "count-destination-target-reached")
 - the number of charging stations that cars want to reach and those that are actually reached ("count-station-target", "count-station-target-reached")
 
-- a value that lets you know when the station selection will be made ("tick-count"), the threshould value is currently set at 5000 and at 10000 at 15000 after
+- a value that lets you know when the station selection will be made ("tick-count")
 - ("dead-stations-one", "dead-stations-two" and "dead-stations-three") that show the decreae in the number of stations depending of their utility
 
 In the model it is possible to observe the battery level of the cars which varies according to their movement as well as the number of customers of the stations which increases as the model is simulated.
@@ -42,6 +42,9 @@ In fact, the model includes a series of coordinates that refer to the major poin
 After the first block in which all the agents and destinations are defined, global variables are defined which allow the data to be displayed via the monitors in the interface. Destinations are modeled by blue buildings, stations by crosses (at first green crosses represent in-route stations and orange crosses represent stations near destinations).
 Tourist cars are modeled in red and delivery service cars are modeled in yellow.
 
+At first the stations are randomly placed (200 stations + 25 stations near the destinations).
+Subsequently the number is decreased over time based on whether the stations are used or not. Only the most used stations remain until the end.
+At the end of the simulation (tick-counter = 70000), only 8 stations that are really needed to serve a total of 100 cars.
 
 <hr />
 ## Credits
@@ -60,7 +63,3 @@ Yang Weiyi <br/>
 Porter Zachary <br/>
 Sangem Priya Varenya <br/>
 Spera Jessica <br/>
-
-  
-
-
