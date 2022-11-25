@@ -2,6 +2,8 @@
 This is a Netlogo project to explore the ways to place electric vehicle charging infrastructure in Dublin City area using agent-based modelling.
 
 ## Introduction
+The purpose of this code is to modelize the placement of Electric vehicle charging stations around Dublin city centre and to come up with the optimal number of charging stations required. This code modelizes two types of charging stations namely, destination charging stations and enroute charging stations. As the model is based on Dublin city centre, the flow of Electric vehicles has been made around the popular destinations of the city centre and some grocery and general stores which tend to be visited by people more often. The agents i.e. the electric vehicles move around the map reaching different destinations and develop a preferential network of roads. This network of roads helps decide on the location of charging stations based on the popularity of the road. 
+
 DCC has a vehicle charging strategy described in the 
 <em> [Executive summary](https://www.dublincity.ie/residential/transportation/electric-vehicle-charging-information). </em>
 
