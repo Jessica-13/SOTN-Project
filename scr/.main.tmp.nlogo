@@ -39,14 +39,7 @@ globals [
   count-station-target                              ; number of electric charging stations to be reached
   count-station-target-reached                      ; number of electric charging stations that you have actually reached
   tick-counter
-  dead-stations-one
-  dead-stations-two
-  dead-stations-three
-  dead-stations-four
-  dead-stations-five
-  dead-stations-six
-  dead-stations-seven
-  dead-stations-eight
+  useful-stations
 ]
 
 to setup
@@ -134,14 +127,7 @@ to setup
 
   set count-destination-target ( count-destination-target - 2 * number-of-cars )               ; to start from 0
   set count-station-target ( count-station-target - 2 * number-of-cars )                       ; to start from 0
-  set dead-stations-one number-of-stations
-  set dead-stations-two number-of-stations
-  set dead-stations-three number-of-stations
-  set dead-stations-four number-of-stations
-  set dead-stations-five number-of-stations
-  set dead-stations-six number-of-stations
-  set dead-stations-seven number-of-stations
-  set dead-stations-eight number-of-stations
+  set useful-stations number-of-stations
 
   ask stations [
     set label 0
@@ -174,87 +160,9 @@ to go
   ask tourist-cars [
     set label round(battery-level)
   ]
-  if tick-counter > 5000 [
-    ask stations with [ capacity = 0 ][
-      set dead-stations-one ( dead-stations-one - 1 )
-      set dead-stations-two ( dead-stations-two - 1 )
-      set dead-stations-three ( dead-stations-three - 1 )
-      set dead-stations-four ( dead-stations-four - 1 )
-      set dead-stations-five ( dead-stations-five - 1 )
-      set dead-stations-six ( dead-stations-six - 1 )
-      set dead-stations-seven ( dead-stations-seven - 1 )
-      set dead-stations-eight ( dead-stations-eight - 1 )
-      die
-    ]
-  ]
-
-  if tick-counter > 10000 [
-    ask stations with [ capacity = 1 ][
-      set dead-stations-two ( dead-stations-two - 1 )
-      set dead-stations-three ( dead-stations-three - 1 )
-      set dead-stations-four ( dead-stations-four - 1 )
-      set dead-stations-five ( dead-stations-five - 1 )
-      set dead-stations-six ( dead-stations-six - 1 )
-      set dead-stations-seven ( dead-stations-seven - 1 )
-      set dead-stations-eight ( dead-stations-eight - 1 )
-      die
-    ]
-  ]
-
-  if tick-counter > 15000 [
-    ask stations with [ capacity = 2 ][
-      set dead-stations-three ( dead-stations-three - 1 )
-      set dead-stations-four ( dead-stations-four - 1 )
-      set dead-stations-five ( dead-stations-five - 1 )
-      set dead-stations-six ( dead-stations-six - 1 )
-      set dead-stations-seven ( dead-stations-seven - 1 )
-      set dead-stations-eight ( dead-stations-eight - 1 )
-      die
-    ]
-  ]
-
-  if tick-counter > 20000 [
-    ask stations with [ capacity <= 4 ][
-      set dead-stations-four ( dead-stations-four - 1 )
-      set dead-stations-five ( dead-stations-five - 1 )
-      set dead-stations-six ( dead-stations-six - 1 )
-      set dead-stations-seven ( dead-stations-seven - 1 )
-      set dead-stations-eight ( dead-stations-eight - 1 )
-      die
-    ]
-  ]
-
-  if tick-counter > 25000 [
-    ask stations with [ capacity <= 6 ][
-      set dead-stations-five ( dead-stations-five - 1 )
-      set dead-stations-six ( dead-stations-six - 1 )
-      set dead-stations-seven ( dead-stations-seven - 1 )
-      set dead-stations-eight ( dead-stations-eight - 1 )
-      die
-    ]
-  ]
-
-  if tick-counter > 30000 [
-    ask stations with [ capacity <= 10 ][
-      set dead-stations-six ( dead-stations-six - 1 )
-      set dead-stations-seven ( dead-stations-seven - 1 )
-      set dead-stations-eight ( dead-stations-eight - 1 )
-      die
-    ]
-  ]
-
-
   if tick-counter > 35000 [
-    ask stations with [ capacity <= 15 ][
-      set dead-stations-seven ( dead-stations-seven - 1 )
-      set dead-stations-eight ( dead-stations-eight - 1 )
-      die
-    ]
-  ]
-
-  if tick-counter > 40000 [
-    ask stations with [ capacity <= 20 ][
-      set dead-stations-eight ( dead-stations-eight - 1 )
+    ask stations with [ capacity  25 ][
+      set useful-stations ( useful-stations - 1 )
       die
     ]
   ]
@@ -745,84 +653,7 @@ MONITOR
 1330
 74
 NIL
-dead-stations-one
-17
-1
-11
-
-MONITOR
-1338
-29
-1452
-74
-NIL
-dead-stations-two
-17
-1
-11
-
-MONITOR
-1220
-91
-1344
-136
-NIL
-dead-stations-three
-17
-1
-11
-
-MONITOR
-1348
-89
-1465
-134
-NIL
-dead-stations-four
-17
-1
-11
-
-MONITOR
-1223
-151
-1337
-196
-NIL
-dead-stations-five
-17
-1
-11
-
-MONITOR
-1347
-150
-1456
-195
-NIL
-dead-stations-six
-17
-1
-11
-
-MONITOR
-1223
-204
-1350
-249
-NIL
-dead-stations-seven
-17
-1
-11
-
-MONITOR
-1361
-208
-1482
-253
-NIL
-dead-stations-eight
+useful-stations
 17
 1
 11
