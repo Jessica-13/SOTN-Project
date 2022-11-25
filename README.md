@@ -39,8 +39,11 @@ In the model it is possible to observe the battery level of the cars which varie
 The model informs about the suggested placement of the subset or the entirety of the necessary charging stations by showing the position of the stations really needed following a certain period of implementation of the code. 
 In fact, the model includes a series of coordinates that refer to the major points of interest on the map as well as to other specific points on the map where a greater influx of cars is assumed. The agents then move around the map reaching the various destinations by developing a system of "preferential roads" which therefore become the most used ones and which therefore require a greater number of stations. 
 
-...
+After the first block in which all the agents and destinations are defined, global variables are defined which allow the data to be displayed via the monitors in the interface. Destinations are modeled by blue buildings, stations by crosses (at first green crosses represent in-route stations and orange crosses represent stations near destinations).
+Tourist cars are modeled in red and delivery service cars are modeled in yellow.
 
+
+<hr />
 ## Credits
 
 <p align="center">
