@@ -127,7 +127,7 @@ to setup
 
   set count-destination-target ( count-destination-target - 2 * number-of-cars )               ; to start from 0
   set count-station-target ( count-station-target - 2 * number-of-cars )                       ; to start from 0
-  set useful-stations number-of-stations
+  set useful-stations ( number-of-stations + 25 )
 
   ask stations [
     set label 0
@@ -160,10 +160,73 @@ to go
   ask tourist-cars [
     set label round(battery-level)
   ]
-  if tick-counter > 35000 [
-    ask stations with [ capacity  25 ][
+  ifelse tick-counter = 5000 [
+    ask stations with [ capacity <= 1 ][
       set useful-stations ( useful-stations - 1 )
       die
+    ]
+  ][
+    ifelse tick-counter = 10000 [
+      ask stations with [ capacity <= 5 ][
+        set useful-stations ( useful-stations - 1 )
+        die
+      ]
+    ][
+      ifelse tick-counter = 15000 [
+        ask stations with [ capacity <= 10 ][
+          set useful-stations ( useful-stations - 1 )
+          die
+        ]
+      ][
+        ifelse tick-counter = 20000 [
+          ask stations with [ capacity <= 15 ][
+            set useful-stations ( useful-stations - 1 )
+            die
+          ]
+        ][
+          ifelse tick-counter = 25000 [
+            ask stations with [ capacity <= 20 ][
+              set useful-stations ( useful-stations - 1 )
+              die
+            ]
+          ][
+            ifelse tick-counter = 30000 [
+              ask stations with [ capacity <= 40 ][
+                set useful-stations ( useful-stations - 1 )
+                die
+              ]
+            ][
+              ifelse tick-counter = 35000 [
+                ask stations with [ capacity <= 60 ][
+                  set useful-stations ( useful-stations - 1 )
+                  die
+                ]
+              ][
+                ifelse tick-counter = 40000 [
+                  ask stations with [ capacity <= 80 ][
+                    set useful-stations ( useful-stations - 1 )
+                    die
+                  ]
+                ][
+                  ifelse tick-counter = 50000 [
+                    ask stations with [ capacity <= 100 ][
+                      set useful-stations ( useful-stations - 1 )
+                      die
+                    ]
+                  ][
+                    if tick-counter = 0000 [
+                      ask stations with [ capacity <= 200 ][
+                        set useful-stations ( useful-stations - 1 )
+                        die
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
     ]
   ]
 
