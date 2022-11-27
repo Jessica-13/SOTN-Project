@@ -162,74 +162,74 @@ to go
   ]
   ifelse tick-counter = 5000 [
     ask stations with [ capacity <= 1 ][
-      set useful-stations ( useful-stations - 1 )
+      ;set useful-stations ( useful-stations - 1 )
       die
     ]
   ][
     ifelse tick-counter = 10000 [
       ask stations with [ capacity <= 5 ][
-        set useful-stations ( useful-stations - 1 )
+        ;set useful-stations ( useful-stations - 1 )
         die
       ]
     ][
       ifelse tick-counter = 15000 [
         ask stations with [ capacity <= 10 ][
-          set useful-stations ( useful-stations - 1 )
+          ;set useful-stations ( useful-stations - 1 )
           die
         ]
       ][
         ifelse tick-counter = 20000 [
           ask stations with [ capacity <= 15 ][
-            set useful-stations ( useful-stations - 1 )
+            ;set useful-stations ( useful-stations - 1 )
             die
           ]
         ][
           ifelse tick-counter = 25000 [
             ask stations with [ capacity <= 20 ][
-              set useful-stations ( useful-stations - 1 )
+              ;set useful-stations ( useful-stations - 1 )
               die
             ]
           ][
-            ifelse tick-counter = 30000 [
+            if tick-counter = 30000 [
               ask stations with [ capacity <= 40 ][
-                set useful-stations ( useful-stations - 1 )
+                ;set useful-stations ( useful-stations - 1 )
                 die
               ]
-            ][
-              ifelse tick-counter = 35000 [
-                ask stations with [ capacity <= 60 ][
-                  set useful-stations ( useful-stations - 1 )
-                  die
-                ]
-              ][
-                ifelse tick-counter = 40000 [
-                  ask stations with [ capacity <= 80 ][
-                    set useful-stations ( useful-stations - 1 )
-                    die
-                  ]
-                ][
-                  ifelse tick-counter = 50000 [
-                    ask stations with [ capacity <= 100 ][
-                      set useful-stations ( useful-stations - 1 )
-                      die
-                    ]
-                  ][
-                    if tick-counter = 70000 [
-                      ask stations with [ capacity <= 200 ][
-                        set useful-stations ( useful-stations - 1 )
-                        die
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
+            ];[
+             ; ifelse tick-counter = 35000 [
+             ;   ask stations with [ capacity <= 60 ][
+             ;     ;set useful-stations ( useful-stations - 1 )
+             ;     die
+             ;   ]
+             ; ][
+             ;   ifelse tick-counter = 40000 [
+             ;     ask stations with [ capacity <= 80 ][
+             ;       ;set useful-stations ( useful-stations - 1 )
+             ;       die
+             ;     ]
+             ;   ][
+             ;     ifelse tick-counter = 50000 [
+             ;       ask stations with [ capacity <= 100 ][
+             ;         ;set useful-stations ( useful-stations - 1 )
+             ;         die
+             ;       ]
+             ;     ][
+             ;       if tick-counter = 70000 [
+             ;         ask stations with [ capacity <= 200 ][
+             ;           ;set useful-stations ( useful-stations - 1 )
+             ;           die
+             ;         ]
+             ;       ]
+             ;     ]
+             ;   ]
+             ; ]
+            ;]
           ]
         ]
       ]
     ]
   ]
-
+  set useful-stations count stations
   tick
 end
 
@@ -447,6 +447,12 @@ to increase-capacity
   ]
 
 end
+
+; this button is used to remove the cars and to show clearly where the stations are
+to show-stations
+  ask tourist-cars [die]
+  ask delivery-cars [die]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 299
@@ -656,9 +662,9 @@ HORIZONTAL
 
 SLIDER
 18
-410
+390
 220
-443
+423
 popularity-decay-rate
 popularity-decay-rate
 0
@@ -681,10 +687,10 @@ tick-counter
 11
 
 SLIDER
-43
-453
-215
-486
+19
+431
+191
+464
 full-battery-level
 full-battery-level
 100
@@ -696,10 +702,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-27
-496
-237
-529
+15
+480
+225
+513
 threshold-battery-level
 threshold-battery-level
 0
@@ -720,6 +726,23 @@ useful-stations
 17
 1
 11
+
+BUTTON
+22
+519
+142
+552
+NIL
+show-stations
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -1063,7 +1086,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.2.2
+NetLogo 6.3.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
