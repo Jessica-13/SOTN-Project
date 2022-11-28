@@ -77,10 +77,12 @@ to setup
   ask common-destinations[
     if any? patches in-radius 10 with [pcolor = white][
       let empty-patch one-of patches in-radius 10 with [pcolor = white]
-      hatch-stations 1 [
-        set color orange
-        set size 10
-        move-to empty-patch
+      if empty-patch != nobody[
+        hatch-stations 1 [
+          set color orange
+          set size 10
+          move-to empty-patch
+        ]
       ]
     ]
   ]
@@ -127,7 +129,7 @@ to setup
 
   set count-destination-target ( count-destination-target - 2 * number-of-cars )               ; to start from 0
   set count-station-target ( count-station-target - 2 * number-of-cars )                       ; to start from 0
-  set useful-stations ( number-of-stations + 25 )
+  set useful-stations count stations
 
   ask stations [
     set label 0
@@ -236,9 +238,10 @@ end
 
 to move-tourist-cars
   ask tourist-cars [
-    if battery-level = 0 [
-      die                                              ; if the battery reaches 0 the car dies
+    if battery-level <= 0 [
       set count-dead-cars ( count-dead-cars + 1 )      ; the counter is updated accordingly
+      die                                              ; if the battery reaches 0 the car dies
+
     ]
 
     ifelse battery-level > (full-battery-level * threshold-battery-level) [
@@ -308,9 +311,10 @@ end
 
 to move-delivery-cars
   ask delivery-cars [
-    if battery-level = 0 [
-      die                                              ; if the battery reaches 0 the car dies
+    if battery-level <= 0 [
       set count-dead-cars ( count-dead-cars + 1 )      ; the counter is updated accordingly
+      die                                              ; if the battery reaches 0 the car dies
+
     ]
 
     ifelse battery-level > full-battery-level * threshold-battery-level [
