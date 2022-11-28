@@ -47,6 +47,9 @@ At first the stations are randomly placed (200 stations + 25 stations near the d
 Subsequently the number is decreased over time based on whether the stations are used or not. Only the most used stations remain until the end.
 At the end of the simulation (tick-counter = 70000), only 8 stations that are really needed to serve a total of 100 cars.
 
+## Version of Netlogo
+Netlogo 6.3.0 (Compatible also with Netlogo 6.2.2)
+
 <hr />
 
 ## Credits
